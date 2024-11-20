@@ -112,7 +112,7 @@ function displayScore(player1, player2) {
     player2Score.textContent = player2.getScore();
 }
 
-function annoucement(firstPlayer, winner) {
+function annoucement(winner) {
     const announcement = document.getElementById("announcement");
     
     if (winner === player1) {

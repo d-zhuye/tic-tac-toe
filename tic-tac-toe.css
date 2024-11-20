@@ -1,10 +1,13 @@
+:root {
+    --brown: rgb(139, 69, 19);
+}
+
 * {
     box-sizing: border-box;
         font-family: "Sour Gummy", Arial, Helvetica, sans-serif;
 }
 
 body {
-
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -13,9 +16,41 @@ body {
 }
 
 #header {
-    font-size: 3rem;
+    color: var(--brown);
+    font-size: 4rem;
     font-weight: 900;
     margin-bottom: 40px;
+    text-align: center;
+}
+
+#scoreboard {
+    width: clamp(500px, 50vh, 1600px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.score {
+    font-size: 4rem;
+    font-weight: 900;
+    margin: 0px 15px;
+}
+
+#player1, #player2 {
+    font-size: 2rem;
+    padding: 0px 15px;
+    border: 0px;
+    border-style: dashed;
+    border-color: rgb(107, 142, 35);
+    border-radius: 40px;
+}
+
+#player1-score {
+    color: rgb(218, 165, 32);
+}
+
+#player2-score {
+    color: rgb(106, 90, 205);
 }
 
 #gameboard {
@@ -26,6 +61,8 @@ body {
     border: 30px ridge rgb(139, 69, 19, 70%);
     border-radius: 20px;
     box-shadow: 0px 0px  20px rgb(0, 0, 0, 100%);
+    margin-bottom: 40px;
+
 }
 
 .tile {
@@ -40,3 +77,22 @@ body {
 .tile:nth-child(even) {
     background-color: rgb(139, 69, 19, 10%);
 }
+
+#announcement {
+    font-size: 2rem;
+}
+
+#start {
+    background-color: rgba(107, 142, 35, 40%);
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 10px 60px;
+    border-radius: 10px;
+    border: 0px;
+}
+
+#start:hover {
+    cursor: pointer;
+    background-color: rgba(107, 142, 35, 60%);
+}
+

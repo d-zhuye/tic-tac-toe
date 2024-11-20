@@ -1,18 +1,37 @@
-function createPlayer(name, gamePiece) {
+let isGameActive;
+
+function createPlayer(name, gamePiece, color) {
 
     let score = 0;
     const getScore = () => score;
     const increaseScore = () => score++;
-    const winMessage = () => {
-        console.log(name + " won!");
-    }
-
-    return {name, gamePiece, score, getScore, increaseScore, winMessage};
+    return {name, gamePiece, color, getScore, increaseScore};
 };
+
+player1 = createPlayer("Player 1", "X", "rgb(218, 165, 32)");
+player2 = createPlayer("Player 2", "O", "rgb(106, 90, 205)");
+
 
 function createGameboard(gamepiece, player1, player2) {
     let board = [];
     let gamePiece = gamepiece;
+
+    const turnIndicator = () => {
+        const greenBackground = "rgb(107, 142, 35, 20%)";
+        const indicator1 = document.getElementById("player1");
+        const indicator2 = document.getElementById("player2");
+        if (gamePiece == "X") {
+            indicator1.style.backgroundColor = greenBackground;
+            indicator1.style.borderWidth = "3px";
+            indicator2.style.backgroundColor = "white";
+            indicator2.style.borderWidth = "0px";
+        } else if (gamePiece == "O") {
+            indicator1.style.backgroundColor = "white";
+            indicator1.style.borderWidth = "0px";
+            indicator2.style.backgroundColor = greenBackground;
+            indicator2.style.borderWidth = "3px";
+        }
+    }
 
     const createTiles = () => {
         const gameboard = document.getElementById("gameboard");
@@ -20,22 +39,32 @@ function createGameboard(gamepiece, player1, player2) {
         for (let i = 0; i < 9; i++) {
             const tile = document.createElement("button");
             tile.classList.add("tile");
-            tile.addEventListener("click",(event) => {
+            tile.addEventListener("click", (event) => {
                 event.stopPropagation();
-                tile.textContent = gamePiece;
-                checkWinner(board, player1, player2);
+                if (isGameActive && tile.textContent === "") {
+                    if (gamePiece == player1.gamePiece) {
+                        tile.style.color = player1.color;
+                    } else {
+                        tile.style.color = player2.color;
+                    }
 
-                if (gamePiece == player1.gamePiece) {
-                    gamePiece = player2.gamePiece;
-                } else {
-                    gamePiece = player1.gamePiece;
+                    tile.textContent = gamePiece;
+                    checkWinner(board, player1, player2);
+
+                    if (gamePiece == player1.gamePiece) {
+                        gamePiece = player2.gamePiece;
+                    } else {
+                        gamePiece = player1.gamePiece;
+                    }
+
+                    turnIndicator();
                 }
             })
             board.push(tile);
             gameboard.appendChild(tile);
         }
     }
-    return {createTiles}
+    return {turnIndicator, createTiles }
 }
 
 function checkWinner(board, player1, player2) {
@@ -62,21 +91,42 @@ function checkWinner(board, player1, player2) {
         let result = arr.every((val) => val === arr[0] && val != "");
         if (result) {
             if (arr[0] == "X") {
-                winner = player1.name;
+                winner = player1;
                 player1.increaseScore();
             } else {
-                winner = player2.name;
+                winner = player2;
                 player2.increaseScore();
             }
+            isGameActive = false;
+            displayScore(player1, player2);
+            annoucement(winner);
         }
     })
+}
 
-    if (winner) {
-        console.log("we have a winner!" + winner);
+function displayScore(player1, player2) {
+    const player1Score = document.getElementById("player1-score");
+    const player2Score = document.getElementById("player2-score");
+
+    player1Score.textContent = player1.getScore();
+    player2Score.textContent = player2.getScore();
+}
+
+function annoucement(firstPlayer, winner) {
+    const announcement = document.getElementById("announcement");
+    
+    if (winner === player1) {
+        announcement.textContent = `${player1.name} Wins!`;
+    } else if (winner === player2) {
+        announcement.textContent = `${player2.name} Wins!`;
     }
 }
 
-function coinFlip(player1, player2) { 
+function clearAnnouncement() {
+    const clear = document.getElementById("announcement");
+    clear.textContent = "";
+}
+function coinFlip(player1, player2) {
     let coin = Math.random() * 100;
     let firstPlayer;
     if (coin <= 50) {
@@ -84,22 +134,29 @@ function coinFlip(player1, player2) {
     } else {
         firstPlayer = player2;
     }
-    console.log(coin + ":" + firstPlayer);
     return firstPlayer;
 }
 
 function startGame() {
-   let player1 = "James"; /* prompt("Enter name of Player 1: "); */
-   let player2 = "Helen";       /*prompt("Enter name of Player 2: ");*/
-   firstPlayer = coinFlip(player1, player2);
+    firstPlayer = coinFlip(player1, player2);
+    const announcement = document.getElementById("announcement");
+    announcement.textContent = `${firstPlayer.name} starts first.`;
+    let game = createGameboard(firstPlayer.gamePiece, player1, player2);
+    game.createTiles();
+    game.turnIndicator();
 
-   player1 = createPlayer(player1, "X");
-   player2 = createPlayer(player2, "O");
-
-   console.log(`${firstPlayer} starts first.`);
-
-   let game = createGameboard(firstPlayer.gamePiece, player1, player2);
-   game.createTiles();
 }
 
-startGame();
+(function setUp() {
+    const startButton = document.getElementById("start");
+    startButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (!isGameActive) {
+            isGameActive = true;
+            clearAnnouncement();
+            startGame();
+
+        }
+    })
+})();
+

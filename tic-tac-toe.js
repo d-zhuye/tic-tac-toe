@@ -1,5 +1,3 @@
-let isGameActive;
-
 function createPlayer(name, gamePiece, color) {
 
     let score = 0;
@@ -41,7 +39,7 @@ function createGameboard(gamepiece, player1, player2) {
             tile.classList.add("tile");
             tile.addEventListener("click", (event) => {
                 event.stopPropagation();
-                if (isGameActive && tile.textContent === "") {
+                if (tile.textContent === "") {
                     if (gamePiece == player1.gamePiece) {
                         tile.style.color = player1.color;
                     } else {
@@ -97,7 +95,6 @@ function checkWinner(board, player1, player2) {
                 winner = player2;
                 player2.increaseScore();
             }
-            isGameActive = false;
             displayScore(player1, player2);
             annoucement(winner);
         }
@@ -151,12 +148,8 @@ function startGame() {
     const startButton = document.getElementById("start");
     startButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        if (!isGameActive) {
-            isGameActive = true;
             clearAnnouncement();
             startGame();
-
-        }
     })
 })();
 

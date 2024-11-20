@@ -3,19 +3,77 @@ function createPlayer(name, gamePiece) {
     let score = 0;
     const getScore = () => score;
     const increaseScore = () => score++;
+    const winMessage = () => {
+        console.log(name + " won!");
+    }
 
-    return {name, gamePiece, score, getScore, increaseScore};
+    return {name, gamePiece, score, getScore, increaseScore, winMessage};
 };
 
-function createGameboard() {
-    let board = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
+function createGameboard(gamepiece, player1, player2) {
+    let board = [];
+    let gamePiece = gamepiece;
+
+    const createTiles = () => {
+        const gameboard = document.getElementById("gameboard");
+        gameboard.innerHTML = "";
+        for (let i = 0; i < 9; i++) {
+            const tile = document.createElement("button");
+            tile.classList.add("tile");
+            tile.addEventListener("click",(event) => {
+                event.stopPropagation();
+                tile.textContent = gamePiece;
+                checkWinner(board, player1, player2);
+
+                if (gamePiece == player1.gamePiece) {
+                    gamePiece = player2.gamePiece;
+                } else {
+                    gamePiece = player1.gamePiece;
+                }
+            })
+            board.push(tile);
+            gameboard.appendChild(tile);
+        }
+    }
+    return {createTiles}
+}
+
+function checkWinner(board, player1, player2) {
+    let winner;
+    let winningConditions = [
+        // Horizontal Win Conditions
+        [board[0].textContent, board[1].textContent, board[2].textContent],
+        [board[3].textContent, board[4].textContent, board[5].textContent],
+        [board[6].textContent, board[7].textContent, board[8].textContent],
+
+        // Vertical Win Conditions
+        [board[0].textContent, board[3].textContent, board[6].textContent],
+        [board[1].textContent, board[4].textContent, board[7].textContent],
+        [board[2].textContent, board[5].textContent, board[8].textContent],
+
+        // Diagonal Win Conditions
+        [board[0].textContent, board[4].textContent, board[8].textContent],
+        [board[6].textContent, board[4].textContent, board[2].textContent],
     ];
-    
-    const userInput = () => prompt("X or O");
-    return {board, userInput};
+
+    // Check through each win condition array, and ensure that every value 
+    // equals one another
+    winningConditions.forEach((arr) => {
+        let result = arr.every((val) => val === arr[0] && val != "");
+        if (result) {
+            if (arr[0] == "X") {
+                winner = player1.name;
+                player1.increaseScore();
+            } else {
+                winner = player2.name;
+                player2.increaseScore();
+            }
+        }
+    })
+
+    if (winner) {
+        console.log("we have a winner!" + winner);
+    }
 }
 
 function coinFlip(player1, player2) { 
@@ -30,32 +88,7 @@ function coinFlip(player1, player2) {
     return firstPlayer;
 }
 
-function checkWinner() {
-    const {board} = createGameboard();
-
-    board[1][0] = board[1][1] = board[1][2] = "X"
-
-    let winner = "";
-
-    if ( board[0][0] == board[0][1] == board[0][2] && board[0][0] !== "") {
-        winner = board[0][0];
-    } else if (board[1][0] == board[1][1] == board[1][2] && board[1][0] !== "") {
-        console.log("we have a winner");
-        winner = board[1][0];
-    } else {
-        console.log("error");
-    }
-
-    console.table(board);
-    console.log("We have a winner" + " " + winner + " won");
-
-    return winner;
-
-}
-
-checkWinner();
-
-function gamePlay() {
+function startGame() {
    let player1 = "James"; /* prompt("Enter name of Player 1: "); */
    let player2 = "Helen";       /*prompt("Enter name of Player 2: ");*/
    firstPlayer = coinFlip(player1, player2);
@@ -64,6 +97,9 @@ function gamePlay() {
    player2 = createPlayer(player2, "O");
 
    console.log(`${firstPlayer} starts first.`);
+
+   let game = createGameboard(firstPlayer.gamePiece, player1, player2);
+   game.createTiles();
 }
 
-gamePlay();
+startGame();
